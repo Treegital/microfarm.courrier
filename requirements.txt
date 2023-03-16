@@ -1,0 +1,3 @@
+pika
+dynaconf
+-e git+ssh://github.com/HorsemanWSGI/postrider.git#egg=postrider
