@@ -1,4 +1,2 @@
-aiozmq
-dynaconf
-minicli
+.
 -e git+ssh://github.com/HorsemanWSGI/postrider.git#egg=postrider
