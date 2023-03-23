@@ -12,9 +12,9 @@ requires-python = ">=3.9"
 classifiers = ["License :: OSI Approved :: MIT License"]
 dependencies = [
   "aiozmq",
-  "dynaconf",
   "minicli",
   "postrider",
+  "tomli",
 ]
 
 [project.scripts]

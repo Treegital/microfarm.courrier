@@ -3,7 +3,6 @@ import time
 import email
 import sys
 import logging
-import dynaconf
 import typing as t
 from pathlib import Path
 from minicli import cli, run
@@ -58,12 +57,18 @@ class CourrierService(rpc.AttrHandler):
 
 
 @cli
-async def serve(config: Path, debug: bool = True):
-    settings = dynaconf.Dynaconf(settings_files=[config])
-    courrier = Courrier(SMTPConfiguration(**settings.smtp))
-    level = logging.DEBUG if debug else logging.WARNING
-    configure_logging(log_level=level)
+async def serve(config: Path):
+    import tomli
+    import logging.config
 
+    assert config.is_file()
+    with config.open("rb") as f:
+        settings = tomli.load(f)
+
+    if logconf := settings.get('logging'):
+        logging.config.dictConfigClass(logconf).configure()
+
+    courrier = Courrier(SMTPConfiguration(**settings['smtp']))
     workers = {}
     for emailer, config in settings['mailbox'].items():
         thread = ProcessorThread(
@@ -77,8 +82,7 @@ async def serve(config: Path, debug: bool = True):
         worker.start()
     try:
         service = CourrierService(workers)
-        server = await rpc.serve_rpc(
-            service, bind='tcp://127.0.0.1:5557')
+        server = await rpc.serve_rpc(service, bind=settings['rpc']['bind'])
         await server.wait_closed()
     finally:
         for worker, config in workers.values():
