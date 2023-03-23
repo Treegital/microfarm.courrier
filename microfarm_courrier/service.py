@@ -1,5 +1,3 @@
-import asyncio
-import time
 import email
 import logging
 import typing as t
