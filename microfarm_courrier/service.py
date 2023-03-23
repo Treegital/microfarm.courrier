@@ -12,7 +12,8 @@ from postrider.queue import ProcessorThread
 from postrider.mailer import SMTPConfiguration, Courrier
 
 
-logger = logging.getLogger('microfarm_courrier')
+rpc_logger = logging.getLogger('microfarm_courrier.rpc')
+mailbox_logger = logging.getLogger('microfarm_courrier.mailbox')
 
 
 class CourrierService(rpc.AttrHandler):
@@ -68,13 +69,14 @@ async def serve(config: Path):
             Maildir(config['path']),
             5.0  # salvo every 5 sec
         )
-        workers[name] = (thread, config)
-
-    for worker, config in workers.values():
-        worker.start()
+        mailbox_logger.debug(f'Creating maidir worker: {name}.')
+        worker = workers[name] = (thread, config)
+        mailbox_logger.debug(f'Starting maidir worker: {name}.')
+        thread.start()
     try:
         service = CourrierService(workers)
         server = await rpc.serve_rpc(service, bind=settings['rpc']['bind'])
+        rpc_logger.info(f"Courrier RPC Service ({settings['rpc']['bind']})")
         await server.wait_closed()
     finally:
         for worker, config in workers.values():
