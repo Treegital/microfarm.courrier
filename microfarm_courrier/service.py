@@ -1,26 +1,18 @@
 import asyncio
 import time
 import email
-import sys
 import logging
 import typing as t
 from pathlib import Path
-from minicli import cli, run
 from mailbox import Maildir
+from aiozmq import rpc
+from minicli import cli, run
 from postrider import create_message
 from postrider.queue import ProcessorThread
 from postrider.mailer import SMTPConfiguration, Courrier
-from aiozmq import rpc
 
 
-def configure_logging(log_level=logging.WARNING):
-    stream_handler = logging.StreamHandler(stream=sys.stdout)
-    stream_handler.setLevel(log_level)
-    logging.basicConfig(
-        level=log_level,
-        format='%(asctime)s %(levelname)s %(module)s %(funcName)s %(message)s',
-        handlers=[stream_handler]
-    )
+logger = logging.getLogger('microfarm_courrier')
 
 
 class CourrierService(rpc.AttrHandler):
