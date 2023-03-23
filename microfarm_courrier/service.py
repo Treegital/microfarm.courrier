@@ -70,13 +70,13 @@ async def serve(config: Path):
 
     courrier = Courrier(SMTPConfiguration(**settings['smtp']))
     workers = {}
-    for emailer, config in settings['mailbox'].items():
+    for name, config in settings['mailbox'].items():
         thread = ProcessorThread(
             courrier,
-            Maildir(config.mailbox),
+            Maildir(config['path']),
             5.0  # salvo every 5 sec
         )
-        workers[config.key] = (thread, config)
+        workers[name] = (thread, config)
 
     for worker, config in workers.values():
         worker.start()

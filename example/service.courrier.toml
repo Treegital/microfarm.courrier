@@ -12,9 +12,8 @@ password = ""
 [mailbox]
 
   [mailbox.notifier]
-    key = "notifier"
     emitter = "notifier@certifarm.org"
-    mailbox = "/tmp/certifarm"
+    path = "/tmp/certifarm"
 
 
 [logging]
