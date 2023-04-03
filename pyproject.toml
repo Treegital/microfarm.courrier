@@ -17,6 +17,13 @@ dependencies = [
   "tomli",
 ]
 
+[project.optional-dependencies]
+test = [
+  "pytest",
+  "pytest-asyncio",
+  "smtpdfix"
+]
+
 [project.scripts]
 mfcourrier = "microfarm_courrier.service:run"
 

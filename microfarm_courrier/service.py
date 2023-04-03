@@ -29,9 +29,9 @@ class CourrierService(rpc.AttrHandler):
 
         if key in self.workers:
             try:
-                worker, config = self.workers[key]
+                worker, emitter = self.workers[key]
                 message = create_message(
-                    config.emitter,
+                    emitter,
                     recipients,
                     subject,
                     text,
@@ -40,8 +40,10 @@ class CourrierService(rpc.AttrHandler):
 
                 msg = email.message_from_string(message)
                 worker.mailbox.add(msg)
-                return True
-            except:
+                return {"msg": "Email enqueued."}
+            except Exception as err:
+                import pdb
+                pdb.set_trace()
                 return {"err": "Email corrupted"}
         else:
             return {"err": "unknown mailer"}
@@ -68,7 +70,7 @@ async def serve(config: Path):
             5.0  # salvo every 5 sec
         )
         mailbox_logger.debug(f'Creating maidir worker: {name}.')
-        worker = workers[name] = (thread, config)
+        worker = workers[name] = (thread, config['emitter'])
         mailbox_logger.debug(f'Starting maidir worker: {name}.')
         thread.start()
     try:
