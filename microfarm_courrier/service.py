@@ -42,8 +42,6 @@ class CourrierService(rpc.AttrHandler):
                 worker.mailbox.add(msg)
                 return {"msg": "Email enqueued."}
             except Exception as err:
-                import pdb
-                pdb.set_trace()
                 return {"err": "Email corrupted"}
         else:
             return {"err": "unknown mailer"}
