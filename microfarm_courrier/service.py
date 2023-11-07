@@ -40,12 +40,26 @@ class CourrierService(rpc.AttrHandler):
 
                 msg = email.message_from_string(message)
                 worker.mailbox.add(msg)
-                return {"msg": "Email enqueued."}
+                return {
+                    "code": 200,
+                    "type": "Notification",
+                    "description": "Email enqueued.",
+                    "body": None
+                }
             except Exception as err:
-                return {"err": "Email corrupted"}
+                return {
+                    "code": 400,
+                    "type": "Error",
+                    "description": "Email corrupted.",
+                    "body": None
+                }
         else:
-            return {"err": "unknown mailer"}
-
+            return {
+                "code": 401,
+                "type": "Error",
+                "description": "Unknown courrier worker.",
+                "body": None
+            }
 
 @cli
 async def serve(config: Path):
